@@ -2,7 +2,7 @@ var dnode = require('./lib/dnode');
 var parseArgs = require('./lib/parse_args');
 var net = require('net');
 var util = require('util');
-var weak
+var weak//???
 
 exports = module.exports = function (cons, opts) {
     return new D(cons, opts);

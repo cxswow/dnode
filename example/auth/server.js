@@ -4,7 +4,7 @@ var net = require('net');
 
 var secretQuotes = require('./quotes.json');
 function randomQuote (cb) {
-    var ix = Math.floor(Math.random() * secretQuotes.length);
+    var ix = Math.floor(Math.random() * secretQuotes.length);//floor:取<=参数的整数
     cb(secretQuotes[ix]);
 }
 
