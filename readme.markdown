@@ -18,29 +18,29 @@ It's callbacks all the way down!
 ## listen and connect
 
 server:
-
-``` js
-var dnode = require('dnode');
-var server = dnode({
-    transform : function (s, cb) {
-        cb(s.replace(/[aeiou]{2,}/, 'oo').toUpperCase())
-    }
-});
-server.listen(5004);
-```
-
-client:
-
-``` js
-var dnode = require('dnode');
-
-var d = dnode.connect(5004);
-d.on('remote', function (remote) {
-    remote.transform('beep', function (s) {
-        console.log('beep => ' + s);
-        d.end();
-    });
-});
+	
+	``` js
+	var dnode = require('dnode');
+	var server = dnode({
+	    transform : function (s, cb) {
+	        cb(s.replace(/[aeiou]{2,}/, 'oo').toUpperCase())
+	    }
+	});
+	server.listen(5004);
+	```
+	
+	client:
+	
+	``` js
+	var dnode = require('dnode');
+	
+	var d = dnode.connect(5004);
+	d.on('remote', function (remote) {
+	    remote.transform('beep', function (s) {
+	        console.log('beep => ' + s);
+	        d.end();
+	    });
+	});
 ```
 
 output:
@@ -60,48 +60,48 @@ Here's the previous example with the streams set up explicitly:
 
 server:
 
-``` js
-var dnode = require('dnode');
-var net = require('net');
-
-var server = net.createServer(function (c) {
-    var d = dnode({
-        transform : function (s, cb) {
-            cb(s.replace(/[aeiou]{2,}/, 'oo').toUpperCase())
-        }
-    });
-    c.pipe(d).pipe(c);
-});
-
-server.listen(5004);
-```
+	``` js
+	var dnode = require('dnode');
+	var net = require('net');
+	
+	var server = net.createServer(function (c) {
+	    var d = dnode({
+	        transform : function (s, cb) {
+	            cb(s.replace(/[aeiou]{2,}/, 'oo').toUpperCase())
+	        }
+	    });
+	    c.pipe(d).pipe(c);
+	});
+	
+	server.listen(5004);
+	```
 
 client:
 
-``` js
-var dnode = require('dnode');
-var net = require('net');
-
-var d = dnode();
-d.on('remote', function (remote) {
-    remote.transform('beep', function (s) {
-        console.log('beep => ' + s);
-        d.end();
-    });
-});
-
-var c = net.connect(5004);
-c.pipe(d).pipe(c);
-```
+	``` js
+	var dnode = require('dnode');
+	var net = require('net');
+	
+	var d = dnode();
+	d.on('remote', function (remote) {
+	    remote.transform('beep', function (s) {
+	        console.log('beep => ' + s);
+	        d.end();
+	    });
+	});
+	
+	var c = net.connect(5004);
+	c.pipe(d).pipe(c);
+	```
 
 output:
 
-```
-$ node server.js &
-[1] 27586
-$ node client.js 
-beep => BOOP
-```
+	```
+	$ node server.js &
+	[1] 27586
+	$ node client.js 
+	beep => BOOP
+	```
 
 ## dnode in the browser
 
@@ -114,63 +114,63 @@ This example uses the streaming interface provided by
 
 First whip up a server:
 
-``` js
-var http = require('http');
-var shoe = require('shoe');
-var ecstatic = require('ecstatic')(__dirname + '/static');
-var dnode = require('dnode');
-
-var server = http.createServer(ecstatic);
-server.listen(9999);
-
-var sock = shoe(function (stream) {
-    var d = dnode({
-        transform : function (s, cb) {
-            var res = s.replace(/[aeiou]{2,}/, 'oo').toUpperCase();
-            cb(res);
-        }
-    });
-    d.pipe(stream).pipe(d);
-});
-sock.install(server, '/dnode');
-```
+	``` js
+	var http = require('http');
+	var shoe = require('shoe');
+	var ecstatic = require('ecstatic')(__dirname + '/static');
+	var dnode = require('dnode');
+	
+	var server = http.createServer(ecstatic);
+	server.listen(9999);
+	
+	var sock = shoe(function (stream) {
+	    var d = dnode({
+	        transform : function (s, cb) {
+	            var res = s.replace(/[aeiou]{2,}/, 'oo').toUpperCase();
+	            cb(res);
+	        }
+	    });
+	    d.pipe(stream).pipe(d);
+	});
+	sock.install(server, '/dnode');
+	```
 
 Then write some browser code:
 
-``` js
-var domready = require('domready');
-var shoe = require('shoe');
-var dnode = require('dnode');
-
-domready(function () {
-    var result = document.getElementById('result');
-    var stream = shoe('/dnode');
-    
-    var d = dnode();
-    d.on('remote', function (remote) {
-        remote.transform('beep', function (s) {
-            result.textContent = 'beep => ' + s;
-        });
-    });
-    d.pipe(stream).pipe(d);
-});
-```
+	``` js
+	var domready = require('domready');
+	var shoe = require('shoe');
+	var dnode = require('dnode');
+	
+	domready(function () {
+	    var result = document.getElementById('result');
+	    var stream = shoe('/dnode');
+	    
+	    var d = dnode();
+	    d.on('remote', function (remote) {
+	        remote.transform('beep', function (s) {
+	            result.textContent = 'beep => ' + s;
+	        });
+	    });
+	    d.pipe(stream).pipe(d);
+	});
+	```
 
 Install the dependencies for this example then compile the browser code with
 [browserify](https://github.com/substack/node-browserify):
-
-```
-$ npm install dnode shoe domready ecstatic
-$ npm install -g browserify
-$ browserify client.js -o static/bundle.js
-```
+	
+	```
+	$ npm install dnode shoe domready ecstatic
+	$ npm install -g browserify
+	$ browserify client.js -o static/bundle.js
+	```
 
 Now drop a script tag into static/index.html:
 
-``` html
-<script src="/bundle.js"></script>
-<div id="result"></div>
-```
+	``` html
+	<script src="/bundle.js"></script>
+	<div id="result"></div>
+	```
 
 and navigate to http://localhost:9999.
 You should see `beep => BOOP` on the page!
@@ -180,9 +180,9 @@ Check out the
 
 # methods
 
-``` js
-var dnode = require('dnode')
-```
+	``` js
+	var dnode = require('dnode')
+	```
 
 ## var d = dnode(cons, opts={})
 

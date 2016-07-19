@@ -18,12 +18,12 @@ exports.listen = function () {
     return d.listen.apply(d, arguments);
 };
 
-util.inherits(D, dnode);
+util.inherits(D, dnode);//D继承dnode
 function D (cons, opts) {
     var self = this;
     if (!opts) opts = {};
     
-    if (opts.weak !== false && !opts.proto) {
+    if (opts.weak !== false && !opts.proto) {//可选项weak，proto里wrap和unwrap要选择
         if (!weak) {
             weak = require("weak")
         }
